@@ -5,6 +5,7 @@ import urllib
 import warnings
 from typing import List, Optional, Union
 
+import certifi
 import torch
 from tqdm import tqdm
 
@@ -43,7 +44,7 @@ def _download(url: str, root: str, in_memory: bool) -> Union[bytes, str]:
         else:
             warnings.warn(f"{download_target} exists, but the SHA256 checksum does not match; re-downloading the file")
 
-    with urllib.request.urlopen(url) as source, open(download_target, "wb") as output:
+    with urllib.request.urlopen(url, cafile=certifi.where()) as source, open(download_target, "wb") as output:
         with tqdm(total=int(source.info().get("Content-Length")), ncols=80, unit='iB', unit_scale=True, unit_divisor=1024) as loop:
             while True:
                 buffer = source.read(8192)
